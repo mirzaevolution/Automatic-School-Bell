@@ -59,6 +59,7 @@
     <Compile Include="EventTest.cs" />
     <Compile Include="ScheduleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepeatedScheduleTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
