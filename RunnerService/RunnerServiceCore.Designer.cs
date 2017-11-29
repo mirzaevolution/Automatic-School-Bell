@@ -1,6 +1,6 @@
 ﻿namespace RunnerService
 {
-    partial class RunnerSvc
+    partial class RunnerServiceWin32
     {
         /// <summary> 
         /// Required designer variable.
@@ -29,10 +29,11 @@
         private void InitializeComponent()
         {
             // 
-            // RunnerSvc
+            // RunnerServiceWin32
             // 
+            this.CanHandlePowerEvent = true;
             this.CanPauseAndContinue = true;
-            this.ServiceName = "RunnerSvc";
+            this.ServiceName = "BellRunnerService";
 
         }
 

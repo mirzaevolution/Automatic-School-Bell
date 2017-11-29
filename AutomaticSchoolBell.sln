@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLib.Tests", "CoreLib.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunnerService", "RunnerService\RunnerService.csproj", "{BD14C64A-2684-4FB8-BF46-F0A70CE44D33}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioPlayer", "AudioPlayer\AudioPlayer.csproj", "{8A2B682E-46E5-44C1-92B0-DFFA7611113C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{BD14C64A-2684-4FB8-BF46-F0A70CE44D33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD14C64A-2684-4FB8-BF46-F0A70CE44D33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD14C64A-2684-4FB8-BF46-F0A70CE44D33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A2B682E-46E5-44C1-92B0-DFFA7611113C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A2B682E-46E5-44C1-92B0-DFFA7611113C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A2B682E-46E5-44C1-92B0-DFFA7611113C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A2B682E-46E5-44C1-92B0-DFFA7611113C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,7 +7,7 @@
     <ProjectGuid>{BD14C64A-2684-4FB8-BF46-F0A70CE44D33}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>RunnerService</RootNamespace>
-    <AssemblyName>RunnerService</AssemblyName>
+    <AssemblyName>BellRunnerSvc</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -59,11 +60,11 @@
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="RunnerSvc.cs">
+    <Compile Include="RunnerServiceCore.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="RunnerSvc.Designer.cs">
-      <DependentUpon>RunnerSvc.cs</DependentUpon>
+    <Compile Include="RunnerServiceCore.Designer.cs">
+      <DependentUpon>RunnerServiceCore.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,8 +77,8 @@
     <EmbeddedResource Include="ProjectInstaller.resx">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="RunnerSvc.resx">
-      <DependentUpon>RunnerSvc.cs</DependentUpon>
+    <EmbeddedResource Include="RunnerServiceCore.resx">
+      <DependentUpon>RunnerServiceCore.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

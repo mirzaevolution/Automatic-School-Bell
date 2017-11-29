@@ -8,7 +8,7 @@ using CoreLib.Models;
 using System.Timers;
 namespace RunnerService
 {
-    public partial class RunnerSvc : ServiceBase
+    public partial class RunnerServiceWin32 : ServiceBase
     {
         private Timer _timerDailySchedule;
         private Timer _timerEvent;
@@ -21,7 +21,7 @@ namespace RunnerService
         private bool _isTimerEventRunning;
         private bool _isTimerRepeatedScheduleRunning;
 
-        public RunnerSvc()
+        public RunnerServiceWin32()
         {
             InitializeComponent();
             LoadComponents();
@@ -46,31 +46,34 @@ namespace RunnerService
 
         private void LoadComponents()
         {
-            if (!EventLog.SourceExists("SchoolBellLogSrc"))
+            try
             {
-                EventLog.CreateEventSource("SchoolBellLogSrc", "SchoolBellLog");
+                
+                _eventLog = new EventLog("Application")
+                {
+                    Source = "BellRunnerService"
+                };
+
+                _timerDailySchedule = new Timer
+                {
+                    Interval = 1000
+                };
+                _timerEvent = new Timer
+                {
+                    Interval = 1000
+                };
+                _timerRepeatedSchedule = new Timer
+                {
+                    Interval = 1000
+                };
+                _timerDailySchedule.Elapsed += DailyScheduleElapsed;
+                _timerEvent.Elapsed += EventElapsed;
+                _timerRepeatedSchedule.Elapsed += RepeatedScheduleElapsed;
             }
-            _eventLog = new EventLog
+            catch(Exception ex)
             {
-                Source = "SchoolBellLogSrc",
-                Log = "SchoolBellLog"
-            };
-            
-            _timerDailySchedule = new Timer
-            {
-                Interval = 1000
-            };
-            _timerEvent = new Timer
-            {
-                Interval = 1000
-            };
-            _timerRepeatedSchedule = new Timer
-            {
-                Interval = 1000
-            };
-            _timerDailySchedule.Elapsed += DailyScheduleElapsed;
-            _timerEvent.Elapsed += EventElapsed;
-            _timerRepeatedSchedule.Elapsed += RepeatedScheduleElapsed;
+                _eventLog.WriteEntry($"Error while loading components.\n{ex.Message}", EventLogEntryType.Error);
+            }
         }
 
         private void DailyScheduleElapsed(object sender, ElapsedEventArgs e)
@@ -79,9 +82,12 @@ namespace RunnerService
             {
                 Schedule schedule = _schedules[i];
                 TimeSpan now = DateTime.Now.TimeOfDay;
-                if ((schedule.StartTime.Hours == now.Hours) && (schedule.StartTime.Minutes == now.Minutes) && (schedule.StartTime.Seconds == now.Seconds))
+                if ((schedule.Day == DateTime.Now.DayOfWeek) && 
+                    (schedule.StartTime.Hours == now.Hours) && 
+                    (schedule.StartTime.Minutes == now.Minutes) && 
+                    (schedule.StartTime.Seconds == now.Seconds))
                 {
-                    Parallel.Invoke(() => StartSchedule(schedule.AudioLocation, schedule.PlayerLocation));
+                    Task.Run(() => StartSchedule(schedule.AudioLocation, schedule.PlayerLocation));
                     _eventLog.WriteEntry($"Daily Schedule matches!");
                 }
             }
@@ -98,7 +104,7 @@ namespace RunnerService
                     (_event.StartTime.Minutes == now.Minutes) && 
                     (_event.StartTime.Seconds == now.Seconds))
                 {
-                    Parallel.Invoke(() => StartSchedule(_event.AudioLocation, _event.PlayerLocation));
+                    Task.Run(() => StartSchedule(_event.AudioLocation, _event.PlayerLocation));
                     _eventLog.WriteEntry($"Event matches!");
                 }
             }
@@ -117,7 +123,7 @@ namespace RunnerService
                         if ((schedule.StartDateTime.TimeOfDay.Minutes == now.Minutes) && 
                             (schedule.StartDateTime.TimeOfDay.Seconds == now.Seconds))
                         {
-                            Parallel.Invoke(() => StartSchedule(schedule.AudioLocation, schedule.PlayerLocation));
+                            Task.Run(() => StartSchedule(schedule.AudioLocation, schedule.PlayerLocation));
                             _eventLog.WriteEntry($"Hourly Repeated Schedule matches!");
                         }
                         break;
@@ -127,7 +133,7 @@ namespace RunnerService
                             (schedule.StartDateTime.TimeOfDay.Minutes == now.Minutes) &&
                             (schedule.StartDateTime.TimeOfDay.Seconds == now.Seconds))
                         {
-                            Parallel.Invoke(() => StartSchedule(schedule.AudioLocation, schedule.PlayerLocation));
+                            Task.Run(() => StartSchedule(schedule.AudioLocation, schedule.PlayerLocation));
                             _eventLog.WriteEntry($"Daily Repeated Schedule matches!");
                         }
                         break;
@@ -139,7 +145,7 @@ namespace RunnerService
                             (schedule.StartDateTime.TimeOfDay.Minutes == DateTime.Now.TimeOfDay.Minutes) &&
                             (schedule.StartDateTime.TimeOfDay.Seconds == DateTime.Now.TimeOfDay.Seconds))
                         {
-                            Parallel.Invoke(() => StartSchedule(schedule.AudioLocation, schedule.PlayerLocation));
+                            Task.Run(() => StartSchedule(schedule.AudioLocation, schedule.PlayerLocation));
                             _eventLog.WriteEntry($"Daily Repeated Schedule matches!");
                         }
                         break;
@@ -149,87 +155,104 @@ namespace RunnerService
 
         private void StartContinue()
         {
-            using (Repository<Schedule> repo = new Repository<Schedule>())
+          
+            try
             {
-                var result = repo.GetAll();
-                if (result.Status.Success)
+                using (Repository<Schedule> repo = new Repository<Schedule>())
                 {
-                    if (result.Data.Count > 0)
+                    var result = repo.GetAll();
+                    if (result.Status.Success)
                     {
-                        _schedules = result.Data as List<Schedule>;
-                        _timerDailySchedule.Start();
-                        _isTimerDailyScheduleRunning = true;
-                        _eventLog.WriteEntry($"Starting Daily Schedule Timer at {DateTime.Now}");
+                        if (result.Data.Count > 0)
+                        {
+                            _schedules = result.Data as List<Schedule>;
+                            _timerDailySchedule.Start();
+                            _isTimerDailyScheduleRunning = true;
+                            _eventLog.WriteEntry($"Starting Daily Schedule Timer at {DateTime.Now}");
+                        }
+                        else
+                            _isTimerDailyScheduleRunning = false;
                     }
                     else
+                    {
+                        _eventLog.WriteEntry($"Failed to start Daily Schedule Timer", EventLogEntryType.Error);
                         _isTimerDailyScheduleRunning = false;
+                    }
                 }
-                else
+                using (Repository<Event> repo = new Repository<Event>())
                 {
-                    _eventLog.WriteEntry($"Failed to start Daily Schedule Timer", EventLogEntryType.Error);
-                    _isTimerDailyScheduleRunning = false;
-                }
-            }
-            using (Repository<Event> repo = new Repository<Event>())
-            {
-                var result = repo.GetAll();
-                if (result.Status.Success)
-                {
-                    if (result.Data.Count > 0)
+                    var result = repo.GetAll();
+                    if (result.Status.Success)
                     {
-                        _events = result.Data as List<Event>;
-                        _timerEvent.Start();
-                        _isTimerEventRunning = true;
-                        _eventLog.WriteEntry($"Starting Event Timer at {DateTime.Now}");
+                        if (result.Data.Count > 0)
+                        {
+                            _events = result.Data as List<Event>;
+                            _timerEvent.Start();
+                            _isTimerEventRunning = true;
+                            _eventLog.WriteEntry($"Starting Event Timer at {DateTime.Now}");
+                        }
+                        else
+                            _isTimerEventRunning = false;
                     }
                     else
+                    {
+                        _eventLog.WriteEntry($"Failed to start Event Timer", EventLogEntryType.Error);
                         _isTimerEventRunning = false;
+                    }
                 }
-                else
+                using (Repository<RepeatedSchedule> repo = new Repository<RepeatedSchedule>())
                 {
-                    _eventLog.WriteEntry($"Failed to start Event Timer", EventLogEntryType.Error);
-                    _isTimerEventRunning = false;
-                }
-            }
-            using (Repository<RepeatedSchedule> repo = new Repository<RepeatedSchedule>())
-            {
-                var result = repo.GetAll();
-                if (result.Status.Success)
-                {
-                    if (result.Data.Count > 0)
+                    var result = repo.GetAll();
+                    if (result.Status.Success)
                     {
-                        _repeatedSchedules = result.Data as List<RepeatedSchedule>;
-                        _timerRepeatedSchedule.Start();
-                        _isTimerRepeatedScheduleRunning = true;
-                        _eventLog.WriteEntry($"Starting Repeated Schedule Timer at {DateTime.Now}");
+                        if (result.Data.Count > 0)
+                        {
+                            _repeatedSchedules = result.Data as List<RepeatedSchedule>;
+                            _timerRepeatedSchedule.Start();
+                            _isTimerRepeatedScheduleRunning = true;
+                            _eventLog.WriteEntry($"Starting Repeated Schedule Timer at {DateTime.Now}");
+                        }
+                        else
+                            _isTimerRepeatedScheduleRunning = false;
                     }
                     else
+                    {
+                        _eventLog.WriteEntry($"Failed to start Repeated Schedule Timer", EventLogEntryType.Error);
                         _isTimerRepeatedScheduleRunning = false;
+                    }
                 }
-                else
-                {
-                    _eventLog.WriteEntry($"Failed to start Repeated Schedule Timer", EventLogEntryType.Error);
-                    _isTimerRepeatedScheduleRunning = false;
-                }
+
+            }
+            catch (Exception ex)
+            {
+                _eventLog.WriteEntry($"Error while loading data.\n{ex.Message}", EventLogEntryType.Error);
             }
         }
         
         private void PauseStop()
         {
-            if(_isTimerDailyScheduleRunning)
+            
+            try
             {
-                _timerDailySchedule.Stop();
-                _isTimerDailyScheduleRunning = false;
+                if (_isTimerDailyScheduleRunning)
+                {
+                    _timerDailySchedule.Stop();
+                    _isTimerDailyScheduleRunning = false;
+                }
+                if (_isTimerEventRunning)
+                {
+                    _timerEvent.Stop();
+                    _isTimerEventRunning = false;
+                }
+                if (_isTimerRepeatedScheduleRunning)
+                {
+                    _timerRepeatedSchedule.Stop();
+                    _isTimerRepeatedScheduleRunning = false;
+                }
             }
-            if(_isTimerEventRunning)
+            catch(Exception ex)
             {
-                _timerEvent.Stop();
-                _isTimerEventRunning = false;
-            }
-            if(_isTimerRepeatedScheduleRunning)
-            {
-                _timerRepeatedSchedule.Stop();
-                _isTimerRepeatedScheduleRunning = false;
+                _eventLog.WriteEntry($"Error while stopping all timers.\n{ex.Message}", EventLogEntryType.Error);
             }
         }
 

@@ -17,7 +17,7 @@ namespace RunnerService
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
-                new RunnerSvc()
+                new RunnerServiceWin32()
             };
             ServiceBase.Run(ServicesToRun);
         }

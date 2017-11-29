@@ -28,33 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.runnerSvcProcessInstaller = new System.ServiceProcess.ServiceProcessInstaller();
-            this.runnerSvcInstaller = new System.ServiceProcess.ServiceInstaller();
+            this.serviceProcessInstaller1 = new System.ServiceProcess.ServiceProcessInstaller();
+            this.serviceInstaller1 = new System.ServiceProcess.ServiceInstaller();
             // 
-            // runnerSvcProcessInstaller
+            // serviceProcessInstaller1
             // 
-            this.runnerSvcProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
-            this.runnerSvcProcessInstaller.Password = null;
-            this.runnerSvcProcessInstaller.Username = null;
+            this.serviceProcessInstaller1.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
+            this.serviceProcessInstaller1.Password = null;
+            this.serviceProcessInstaller1.Username = null;
             // 
-            // runnerSvcInstaller
+            // serviceInstaller1
             // 
-            this.runnerSvcInstaller.Description = "Automatic School Bell Service.";
-            this.runnerSvcInstaller.DisplayName = "Runner Service For Automatic School Bell";
-            this.runnerSvcInstaller.ServiceName = "RunnerSvc";
-            this.runnerSvcInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            this.serviceInstaller1.Description = "A service needed to syncrhonize time for automatic school bell.";
+            this.serviceInstaller1.DisplayName = "BellRunnerService";
+            this.serviceInstaller1.ServiceName = "BellRunnerService";
+            this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
-            this.runnerSvcProcessInstaller,
-            this.runnerSvcInstaller});
+            this.serviceProcessInstaller1,
+            this.serviceInstaller1});
 
         }
 
         #endregion
 
-        private System.ServiceProcess.ServiceProcessInstaller runnerSvcProcessInstaller;
-        private System.ServiceProcess.ServiceInstaller runnerSvcInstaller;
+        private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller1;
+        private System.ServiceProcess.ServiceInstaller serviceInstaller1;
     }
 }
