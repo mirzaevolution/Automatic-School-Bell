@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CoreLib.DataAccess;
 using CoreLib.Models;
@@ -157,7 +155,7 @@ namespace AutomaticSchoolBell.GUI.Schedules
                 StartTime = new TimeSpan(0, 0, 0),
                 IsChecked = false
             };
-
+            ScheduleCollection.Add(SelectedSchedule);
         }
 
         private bool CanAdd()
@@ -195,8 +193,7 @@ namespace AutomaticSchoolBell.GUI.Schedules
         {
             if ((ScheduleCollection.Count == 0) || (_addMode || _editMode || _removeMode))
                 return false;
-
-            return ScheduleCollection.Any(x => x.IsChecked);
+            return true;
         }
 
         private void OnSave()
