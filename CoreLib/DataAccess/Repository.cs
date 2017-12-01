@@ -42,6 +42,8 @@ namespace CoreLib.DataAccess
             try
             {
                 list = _table.ToList();
+                if (list == null)
+                    list = new List<T>();
             }
             catch(Exception ex)
             {
@@ -135,6 +137,33 @@ namespace CoreLib.DataAccess
             };
         }
 
+        public DataResult<T> InsertWithResult(T item)
+        {
+            bool success = true;
+            string message = "";
+            try
+            {
+                _table.Add(item);
+                _ctx.SaveChanges();
+                
+            }
+            catch (Exception ex)
+            {
+                item = null;
+                success = false;
+                message = $"Error: `{ex.Message}`";
+            }
+            return new DataResult<T>
+            {
+                Data = item,
+                Status = new MainResult
+                {
+                    Success = success,
+                    ErrorMessage = message
+                }
+            };
+        }
+
         public MainResult Update(T item)
         {
             bool success = true;
@@ -167,6 +196,26 @@ namespace CoreLib.DataAccess
             try
             {
                 _table.Remove(item);
+                _ctx.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                success = false;
+                message = $"Error: `{ex.Message}`";
+            }
+            return new MainResult
+            {
+                Success = success,
+                ErrorMessage = message
+            };
+        }
+        public MainResult Delete(IEnumerable<T> items)
+        {
+            bool success = true;
+            string message = "";
+            try
+            {
+                _table.RemoveRange(items);
                 _ctx.SaveChanges();
             }
             catch (Exception ex)
