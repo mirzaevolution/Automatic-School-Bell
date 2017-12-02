@@ -24,5 +24,20 @@ namespace AutomaticSchoolBell.GUI.Events
         {
             InitializeComponent();
         }
+
+        private void EventViewModel_ErrorOccured(object sender, string e)
+        {
+            BitmapImage image = new BitmapImage(new Uri("/Content/ico-notif-error.png", UriKind.Relative));
+            ImageNotification.Source = image;
+            TextStatus.Text = e;
+        }
+
+        private void EventViewModel_Information(object sender, string e)
+        {
+            BitmapImage image = new BitmapImage(new Uri("/Content/ico-notif-info.png", UriKind.Relative));
+            ImageNotification.Source = image;
+            TextStatus.Text = e;
+        }
+       
     }
 }

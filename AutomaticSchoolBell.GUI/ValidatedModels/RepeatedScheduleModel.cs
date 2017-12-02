@@ -1,5 +1,7 @@
 ﻿using System;
 using CoreLib.Models;
+using System.ComponentModel.DataAnnotations;
+
 namespace AutomaticSchoolBell.GUI
 {
     public class RepeatedScheduleModel:ValidatedEditableBindableBase<RepeatedScheduleModel>
@@ -35,7 +37,7 @@ namespace AutomaticSchoolBell.GUI
         }
 
         private int _id;
-        private DateTime _startDateTime;
+        private DateTime? _startDateTime;
         private Repetition _repetition;
         private string _description;
         private string _audioLocation;
@@ -53,7 +55,9 @@ namespace AutomaticSchoolBell.GUI
                 OnPropertyChanged(ref _id, value, nameof(Id));
             }
         }
-        public DateTime StartDateTime
+
+        [Required]
+        public DateTime? StartDateTime
         {
             get
             {
@@ -64,6 +68,8 @@ namespace AutomaticSchoolBell.GUI
                 OnPropertyChanged(ref _startDateTime, value, nameof(StartDateTime));
             }
         }
+
+        [Required]
         public Repetition Repetition
         {
             get
@@ -75,6 +81,8 @@ namespace AutomaticSchoolBell.GUI
                 OnPropertyChanged(ref _repetition, value, nameof(Repetition));
             }
         }
+
+        [Required]
         public string Description
         {
             get
@@ -86,6 +94,8 @@ namespace AutomaticSchoolBell.GUI
                 OnPropertyChanged(ref _description, value, nameof(Description));
             }
         }
+
+        [Required]
         public string AudioLocation
         {
             get

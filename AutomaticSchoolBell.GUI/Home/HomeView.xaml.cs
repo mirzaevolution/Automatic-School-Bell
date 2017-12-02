@@ -1,5 +1,4 @@
-﻿using MahApps.Metro.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,22 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AutomaticSchoolBell.GUI
+namespace AutomaticSchoolBell.GUI.Home
 {
-   
-    public partial class MainWindow : MetroWindow
+    /// <summary>
+    /// Interaction logic for HomeView.xaml
+    /// </summary>
+    public partial class HomeView : UserControl
     {
-       
-        public MainWindow()
+        public HomeView()
         {
             InitializeComponent();
-            
-
-        }
-
-        private void HamburgerMenuControl_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            this.HamburgerMenuControl.Content = e.ClickedItem;
         }
     }
 }

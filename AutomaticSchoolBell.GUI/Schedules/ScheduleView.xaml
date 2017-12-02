@@ -1,12 +1,119 @@
-﻿<UserControl x:Class="AutomaticSchoolBell.GUI.Schedules.ScheduleView"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AutomaticSchoolBell.GUI.Schedules"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             xmlns:converter="clr-namespace:AutomaticSchoolBell.GUI.EnumConverter"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+    x:Class="AutomaticSchoolBell.GUI.Schedules.ScheduleView"
+    d:DesignHeight="500" d:DesignWidth="500" mc:Ignorable="d" Background="White">
+    <i:Interaction.Triggers>
+        <i:EventTrigger>
+            <ei:CallMethodAction TargetObject="{Binding}" MethodName="Load"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <UserControl.Resources>
+        <converter:DayOfWeekConverter x:Key="Converter"/>
+        
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBox" x:Key="TextBoxStyleError">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="1.5"/>
+                    <Setter Property="ToolTip"
+                            Value="{Binding (Validation.Errors).CurrentItem.ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <local:ScheduleViewModel ErrorOccured="ScheduleViewModel_ErrorOccured" Information="ScheduleViewModel_Information"/>
+    </UserControl.DataContext>
+   
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Border IsEnabled="{Binding CanEditFields}">
+            <Grid DataContext="{Binding SelectedSchedule}" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Schedule Day"/>
+                <ComboBox FontSize="16" Grid.Column="1" Margin="5" 
+                      VerticalContentAlignment="Center" SelectedItem="{Binding Day, Converter={StaticResource Converter},UpdateSourceTrigger=PropertyChanged}">
+                    <sys:String>Sunday</sys:String>
+                    <sys:String>Monday</sys:String>
+                    <sys:String>Tuesday</sys:String>
+                    <sys:String>Wednesday</sys:String>
+                    <sys:String>Thursday</sys:String>
+                    <sys:String>Friday</sys:String>
+                    <sys:String>Saturday</sys:String>
+                </ComboBox>
+                <TextBlock Text="Start Time" Grid.Row="1"/>
+                <controls:TimePicker Grid.Row="1" Grid.Column="1" Margin="5" SelectedTime="{Binding StartTime,UpdateSourceTrigger=PropertyChanged}" Width="120" HorizontalAlignment="Left"/>
+                <TextBlock Text="Short Description" Grid.Row="2"/>
+                <TextBox Text="{Binding Description,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBoxStyleError}" Grid.Row="2" Grid.Column="1" controls:TextBoxHelper.ClearTextButton="True" Margin="5"/>
+                <TextBlock Text="Audio Location" Grid.Row="3" />
+                <Grid Grid.Row="3" Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="TextBoxAudioLocation" Style="{StaticResource TextBoxStyleError}" Text="{Binding AudioLocation,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Margin="5"/>
+                    <Button x:Name="ButtonBrowse" Margin="1,1,5,1" Grid.Column="1" Command="{Binding DataContext.BrowseCommand, RelativeSource={RelativeSource AncestorType=Border}}">
+                        <Image Source="/Content/Search.ico" Width="25" Height="25"/>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <WrapPanel Grid.Row="1" Margin="10,3,10,3">
+            <Button Command="{Binding AddCommand}" Content="Add" Margin="5" Width="80" controls:ButtonHelper.CornerRadius="15" BorderBrush="RoyalBlue" BorderThickness="1.4"/>
+            <Button Command="{Binding EditCommand}" Content="Edit" Margin="5" Width="80" controls:ButtonHelper.CornerRadius="15" BorderBrush="RoyalBlue" BorderThickness="1.4"/>
+            <Button Command="{Binding RemoveCommand}" Content="Remove" Margin="5" Width="80" controls:ButtonHelper.CornerRadius="15" BorderBrush="RoyalBlue" BorderThickness="1.4"/>
+            <Button Command="{Binding SaveCommand}" Content="Save" Margin="5" Width="80" controls:ButtonHelper.CornerRadius="15" BorderBrush="RoyalBlue" BorderThickness="1.4"/>
+            <Button Command="{Binding CancelCommand}" Content="Cancel" Margin="5" Width="80" controls:ButtonHelper.CornerRadius="15" BorderBrush="RoyalBlue" BorderThickness="1.4"/>
+        </WrapPanel>
+        <DataGrid x:Name="DatagridSchedule" Margin="10,3,10,3" Grid.Row="2" ItemsSource="{Binding ScheduleCollection}"
+                  SelectedItem="{Binding SelectedSchedule}" IsEnabled="{Binding CanUseDatagrid}"
+                  CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False"
+                  IsSynchronizedWithCurrentItem="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn IsReadOnly="True" Header="Day" Binding="{Binding Day, Converter={StaticResource Converter}}" Width="100"/>
+                <DataGridTextColumn IsReadOnly="True" Header="Start Time" Binding="{Binding StartTime}" Width="*"/>
+                <DataGridTextColumn IsReadOnly="True" Header="Description" Binding="{Binding Description}" Width="2*"/>
+                <DataGridTextColumn IsReadOnly="True" Header="Audio" Binding="{Binding AudioLocation}" Width="2*"/>
+                <DataGridCheckBoxColumn Header="*" Binding="{Binding IsChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="35"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <StatusBar Grid.Row="3" Background="#FF235AFF" Foreground="White" Height="33">
+            <Image x:Name="ImageNotification"/>
+            <TextBlock x:Name="TextStatus" FontSize="12" Height="20"
+                       TextWrapping="WrapWithOverflow">
+            </TextBlock>
+        </StatusBar>
     </Grid>
 </UserControl>

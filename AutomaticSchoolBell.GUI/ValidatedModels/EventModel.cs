@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace AutomaticSchoolBell.GUI
 {
@@ -53,6 +54,8 @@ namespace AutomaticSchoolBell.GUI
                 OnPropertyChanged(ref _id, value, nameof(Id));
             }
         }
+
+        [Required]
         public DateTime Date
         {
             get
@@ -61,9 +64,11 @@ namespace AutomaticSchoolBell.GUI
             }
             set
             {
-                OnPropertyChanged(ref _date, value, nameof(DateTime));
+                OnPropertyChanged(ref _date, value, nameof(Date));
             }
         }
+
+        [Required]
         public TimeSpan StartTime
         {
             get
@@ -75,6 +80,9 @@ namespace AutomaticSchoolBell.GUI
                 OnPropertyChanged(ref _startTime, value, nameof(StartTime));
             }
         }
+
+        [Required]
+        [StringLength(250)]
         public string Description
         {
             get
@@ -86,6 +94,7 @@ namespace AutomaticSchoolBell.GUI
                 OnPropertyChanged(ref _description, value, nameof(Description));
             }
         }
+        [Required]
         public string AudioLocation
         {
             get

@@ -12,7 +12,7 @@ namespace AutomaticSchoolBell.GUI
         private Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
         public bool HasErrors => _errors.Count > 0;
 
-        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged = delegate { };
 
         public IEnumerable GetErrors(string propertyName)
         {

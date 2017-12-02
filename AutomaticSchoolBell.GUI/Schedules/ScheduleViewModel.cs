@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoreLib.DataAccess;
 using CoreLib.Models;
+using Microsoft.Win32;
 
 namespace AutomaticSchoolBell.GUI.Schedules
 {
@@ -12,7 +13,7 @@ namespace AutomaticSchoolBell.GUI.Schedules
         
         private ScheduleModel _selectedSchedule;
         private ObservableCollection<ScheduleModel> _scheduleCollection;
-        private bool _addMode, _editMode, _removeMode, _canEditFields, _canUseDatagrid = true;
+        private bool _addMode, _editMode, _removeMode, _canEditFields=false, _canUseDatagrid = true;
         public ScheduleModel SelectedSchedule
         {
             get
@@ -39,6 +40,7 @@ namespace AutomaticSchoolBell.GUI.Schedules
         public RelayCommand EditCommand { get; private set; }
         public RelayCommand RemoveCommand { get; private set; }
         public RelayCommand SaveCommand { get; private set; }
+        public RelayCommand BrowseCommand { get; private set; }
         public RelayCommand CancelCommand { get; private set; }
         public bool AddMode
         {
@@ -103,6 +105,9 @@ namespace AutomaticSchoolBell.GUI.Schedules
         }
         public async void Load()
         {
+            OnInformationRequested("Fetching data...");
+            bool success = true;
+            string error = "";
             await Task.Run(() =>
             {
                 try
@@ -119,18 +124,28 @@ namespace AutomaticSchoolBell.GUI.Schedules
                             }
                             else
                                 ScheduleCollection = new ObservableCollection<ScheduleModel>();
+
                         }
                         else
-                            OnErrorOccured(result.Status.ErrorMessage);
+                        {
+                            error = result.Status.ErrorMessage;
+                            success = false;
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+                    success = false;
+                    error = $"An error occured. Message: {ex.Message}";
                 }
             });
-        }
 
+            //to avoid cross thread exception
+            if (success)
+                OnInformationRequested("Data loaded successfully");
+            else
+                OnErrorOccured(error);
+        }
         private void InitializeComponents()
         {
             ScheduleCollection = new ObservableCollection<ScheduleModel>();
@@ -139,8 +154,33 @@ namespace AutomaticSchoolBell.GUI.Schedules
             RemoveCommand = new RelayCommand(OnRemove, CanRemove);
             SaveCommand = new RelayCommand(OnSave, CanSave);
             CancelCommand = new RelayCommand(OnCancel, CanCancel);
+            BrowseCommand = new RelayCommand(OnBrowse, CanBrowse);
         }
-        
+        private void OnBrowse()
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                    FileName = "",
+                    Filter = "Mp3 File (*.mp3)|*.mp3"
+                };
+                if (openFileDialog.ShowDialog().Value)
+                {
+                    SelectedSchedule.AudioLocation= openFileDialog.FileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                OnErrorOccured(ex.Message);
+            }
+        }
+        private bool CanBrowse()
+        {
+            return (AddMode || EditMode);
+        }
         private void OnAdd()
         {
             AddMode = true;
@@ -151,20 +191,18 @@ namespace AutomaticSchoolBell.GUI.Schedules
                 Day = DateTime.Now.DayOfWeek,
                 Description = "",
                 AudioLocation = "",
-                PlayerLocation = "",
+                PlayerLocation = Global.PlayerLocation,
                 StartTime = new TimeSpan(0, 0, 0),
                 IsChecked = false
             };
             ScheduleCollection.Add(SelectedSchedule);
         }
-
         private bool CanAdd()
         {
             if (!_addMode && !_editMode && !_removeMode)
                 return true;
             return false;
         }
-
         private void OnEdit()
         {
             EditMode = true;
@@ -196,56 +234,93 @@ namespace AutomaticSchoolBell.GUI.Schedules
             return true;
         }
 
-        private void OnSave()
+        private async void OnSave()
         {
             if(AddMode)
             {
                 var schedule = Converter.ConvertFromScheduleModel(SelectedSchedule);
-                try
+                int id = 0;
+                bool success = true;
+                string error = "";
+                OnInformationRequested("Loading...");
+                await Task.Run(() =>
                 {
-                    using (Repository<Schedule> repo = new Repository<Schedule>())
+                    try
                     {
-                        var result = repo.InsertWithResult(schedule);
-                        if(result.Status.Success)
+                        using (Repository<Schedule> repo = new Repository<Schedule>())
                         {
-                            SelectedSchedule.Id = result.Data.ID;
-                            OnInformationRequested("Data added successfully");
-                        }
-                        else
-                        {
-                            OnErrorOccured(result.Status.ErrorMessage);
+                            var result = repo.InsertWithResult(schedule);
+                            if (result.Status.Success)
+                            {
+                                id = result.Data.ID;
+                            }
+                            else
+                            {
+                                success = false;
+                                error = result.Status.ErrorMessage;
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        error = $"An error occured.Message: {ex.Message}";
+                    }
+                });
+                if(success)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+                    SelectedSchedule.Id = id;
+                    OnInformationRequested("Data added successfully");
+                }
+                else
+                {
+                    ScheduleCollection.Remove(SelectedSchedule);
+                    SelectedSchedule = null;
+                    OnErrorOccured(error);
                 }
                 AddMode = false;
                 
             }
             else if(EditMode)
             {
-                SelectedSchedule.EndEdit();
+                
                 var schedule = Converter.ConvertFromScheduleModel(SelectedSchedule);
-                try
+
+                bool success = true;
+                string error = "";
+                OnInformationRequested("Loading...");
+                await Task.Run(() =>
                 {
-                    using (Repository<Schedule> repo = new Repository<Schedule>())
+                    try
                     {
-                        var result = repo.Update(schedule);
-                        if (result.Success)
+                        using (Repository<Schedule> repo = new Repository<Schedule>())
                         {
-                            OnInformationRequested("Data updated successfully");
-                        }
-                        else
-                        {
-                            OnErrorOccured(result.ErrorMessage);
+                            var result = repo.Update(schedule);
+                            if (!result.Success)
+                            {
+                                success = false;
+                                error = result.ErrorMessage;
+
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        error = $"An error occured.Message: {ex.Message}";
+
+                    }
+                });
+                if(success)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+
+                    SelectedSchedule.EndEdit();
+                    OnInformationRequested("Data updated successfully");
+                }
+                else
+                {
+                    SelectedSchedule.CancelEdit();
+                    OnErrorOccured(error);
                 }
                 EditMode = false;
             }
@@ -255,28 +330,48 @@ namespace AutomaticSchoolBell.GUI.Schedules
                            where item.IsChecked
                            select item;
                 var schedulesToRemove = temp.Select(x => Converter.ConvertFromScheduleModel(x));
-                try
+                bool success = true;
+                string error = "";
+                OnInformationRequested("Loading...");
+                await Task.Run(() =>
                 {
-                    using (Repository<Schedule> repo = new Repository<Schedule>())
+                    try
                     {
-                        var result = repo.Delete(schedulesToRemove);
-                        if (result.Success)
+                        using (Repository<Schedule> repo = new Repository<Schedule>())
                         {
-                            foreach (var item in temp)
-                                ScheduleCollection.Remove(item);
-                            OnInformationRequested("Data removed successfully");
-                        }
-                        else
-                        {
-                            OnErrorOccured(result.ErrorMessage);
+                            var result = repo.Delete(schedulesToRemove);
+                            if (!result.Success)
+                            {
+                                success = false;
+                                error = result.ErrorMessage;
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        error = $"An error occured.Message: {ex.Message}";
+                    }
+                });
+                if(success)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+                    //to avoid Invalid Operation Exception
+                    for (int i = 0; i < ScheduleCollection.Count; i++)
+                    {
+                        if (ScheduleCollection[i].IsChecked)
+                        {
+                            ScheduleCollection.RemoveAt(i);
+                            i--;
+                        }
+
+                    }
+                    OnInformationRequested("Data removed successfully");
                 }
-                RemoveMode = true;
+                else
+                {
+                    OnErrorOccured(error);
+                }
+                RemoveMode = false;
             }
             CanUseDatagrid = true;
             CanEditFields = false;
@@ -291,8 +386,13 @@ namespace AutomaticSchoolBell.GUI.Schedules
                     return true;
                 return false;
             }
-            return (AddMode || EditMode);
-                
+            if (AddMode || EditMode)
+            {
+                if (SelectedSchedule.HasErrors)
+                    return false;
+                return true;
+            }
+            return false;
         }
 
         private void OnCancel()
@@ -325,13 +425,9 @@ namespace AutomaticSchoolBell.GUI.Schedules
         {
             if (RemoveMode)
                 return true;
-            if(AddMode || EditMode)
-            {
-                if (SelectedSchedule.HasErrors)
-                    return false;
-                return true;
-            }
-            return true;
+            return (AddMode || EditMode);
+            
+           
         }
 
         protected virtual void OnErrorOccured(string message)

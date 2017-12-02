@@ -24,5 +24,19 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
         {
             InitializeComponent();
         }
+
+        private void RepeatedScheduleViewModel_ErrorOccured(object sender, string e)
+        {
+            BitmapImage image = new BitmapImage(new Uri("/Content/ico-notif-error.png", UriKind.Relative));
+            ImageNotification.Source = image;
+            TextStatus.Text = e;
+        }
+
+        private void RepeatedScheduleViewModel_Information(object sender, string e)
+        {
+            BitmapImage image = new BitmapImage(new Uri("/Content/ico-notif-info.png", UriKind.Relative));
+            ImageNotification.Source = image;
+            TextStatus.Text = e;
+        }
     }
 }

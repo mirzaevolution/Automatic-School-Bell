@@ -68,7 +68,7 @@ namespace AutomaticSchoolBell.GUI
             return new RepeatedSchedule
             {
                 ID = model.Id,
-                StartDateTime = model.StartDateTime,
+                StartDateTime = model.StartDateTime.Value,
                 Repetition = model.Repetition,
                 Description = model.Description,
                 AudioLocation = model.AudioLocation,

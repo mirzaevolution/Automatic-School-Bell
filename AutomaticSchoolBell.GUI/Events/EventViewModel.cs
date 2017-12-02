@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoreLib.DataAccess;
 using CoreLib.Models;
+using Microsoft.Win32;
 
 namespace AutomaticSchoolBell.GUI.Events
 {
@@ -39,6 +40,7 @@ namespace AutomaticSchoolBell.GUI.Events
         public RelayCommand RemoveCommand { get; private set; }
         public RelayCommand SaveCommand { get; private set; }
         public RelayCommand CancelCommand { get; private set; }
+        public RelayCommand BrowseCommand { get; private set; }
         public bool AddMode
         {
             get
@@ -103,6 +105,9 @@ namespace AutomaticSchoolBell.GUI.Events
 
         public async void Load()
         {
+            OnInformationRequested("Fetching data...");
+            bool success = true;
+            string error = "";
             await Task.Run(() =>
             {
                 try
@@ -121,14 +126,24 @@ namespace AutomaticSchoolBell.GUI.Events
                                 EventCollection = new ObservableCollection<EventModel>();
                         }
                         else
-                            OnErrorOccured(result.Status.ErrorMessage);
+                        {
+                            error = result.Status.ErrorMessage;
+                            success = false;
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+                    success = false;
+                    error = $"An error occured. Message: {ex.Message}";
                 }
             });
+
+            //to avoid cross thread exception
+            if (success)
+                OnInformationRequested("Data loaded successfully");
+            else
+                OnErrorOccured(error);
         }
         
         private void InitializeComponents()
@@ -139,6 +154,34 @@ namespace AutomaticSchoolBell.GUI.Events
             RemoveCommand = new RelayCommand(OnRemove, CanRemove);
             SaveCommand = new RelayCommand(OnSave, CanSave);
             CancelCommand = new RelayCommand(OnCancel, CanCancel);
+            BrowseCommand = new RelayCommand(OnBrowse, CanBrowse);
+        }
+
+        private void OnBrowse()
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                    FileName = "",
+                    Filter = "Mp3 File (*.mp3)|*.mp3"
+                };
+                if (openFileDialog.ShowDialog().Value)
+                {
+                    SelectedEvent.AudioLocation = openFileDialog.FileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                OnErrorOccured(ex.Message);
+            }
+        }
+
+        private bool CanBrowse()
+        {
+            return (AddMode || EditMode);
         }
 
         private void OnAdd()
@@ -150,8 +193,8 @@ namespace AutomaticSchoolBell.GUI.Events
             {
                  Description = "",
                  AudioLocation = "",
-                 PlayerLocation = "",
-                 Date = new DateTime(0,0,0),
+                 PlayerLocation = Global.PlayerLocation,
+                 Date = DateTime.Now.Date,
                  IsChecked = false,
                  StartTime = new TimeSpan(0,0,0)
             };
@@ -194,56 +237,91 @@ namespace AutomaticSchoolBell.GUI.Events
             return true;
         }
 
-        private void OnSave()
+        private async void OnSave()
         {
             if (AddMode)
             {
                 var _event = Converter.ConvertFromEventModel(SelectedEvent);
-                try
+                int id = 0;
+                bool success = true;
+                string error = "";
+                OnInformationRequested("Loading...");
+                await Task.Run(() =>
                 {
-                    using (Repository<Event> repo = new Repository<Event>())
+                    try
                     {
-                        var result = repo.InsertWithResult(_event);
-                        if (result.Status.Success)
+                        using (Repository<Event> repo = new Repository<Event>())
                         {
-                            SelectedEvent.Id = result.Data.ID;
-                            OnInformationRequested("Data added successfully");
-                        }
-                        else
-                        {
-                            OnErrorOccured(result.Status.ErrorMessage);
+                            var result = repo.InsertWithResult(_event);
+                            if (result.Status.Success)
+                            {
+                                id = result.Data.ID;
+                            }
+                            else
+                            {
+                                success = false;
+                                error = result.Status.ErrorMessage;
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        error = $"An error occured. Message: {ex.Message}";
+                    }
+                });
+                if(success)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+                    SelectedEvent.Id = id;
+                    OnInformationRequested("Data added successfully");
+                }
+                else
+                {
+                    EventCollection.Remove(SelectedEvent);
+                    SelectedEvent = null;
+                    OnErrorOccured(error);
                 }
                 AddMode = false;
 
             }
             else if (EditMode)
             {
-                SelectedEvent.EndEdit();
+                
                 var _event = Converter.ConvertFromEventModel(SelectedEvent);
-                try
+                bool success = true;
+                string error = "";
+                OnInformationRequested("Loading...");
+                await Task.Run(() =>
                 {
-                    using (Repository<Event> repo = new Repository<Event>())
+                    try
                     {
-                        var result = repo.Update(_event);
-                        if (result.Success)
+                        using (Repository<Event> repo = new Repository<Event>())
                         {
-                            OnInformationRequested("Data updated successfully");
-                        }
-                        else
-                        {
-                            OnErrorOccured(result.ErrorMessage);
+                            var result = repo.Update(_event);
+                            if (!result.Success)
+                            {
+                                success = false;
+                                error = result.ErrorMessage;
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        error = $"An error occured. Message: {ex.Message}";
+                    }
+                });
+                if(success)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+
+                    SelectedEvent.EndEdit();
+                    OnInformationRequested("Data updated successfully");
+                }
+                else
+                {
+
+                    SelectedEvent.CancelEdit();
+                    OnErrorOccured(error);
                 }
                 EditMode = false;
             }
@@ -253,28 +331,47 @@ namespace AutomaticSchoolBell.GUI.Events
                            where item.IsChecked
                            select item;
                 var eventsToRemove = temp.Select(x => Converter.ConvertFromEventModel(x));
-                try
+                bool success = true;
+                string error = "";
+                OnInformationRequested("Loading...");
+                await Task.Run(() =>
                 {
-                    using (Repository<Event> repo = new Repository<Event>())
+                    try
                     {
-                        var result = repo.Delete(eventsToRemove);
-                        if (result.Success)
+                        using (Repository<Event> repo = new Repository<Event>())
                         {
-                            foreach (var item in temp)
-                                EventCollection.Remove(item);
-                            OnInformationRequested("Data removed successfully");
-                        }
-                        else
-                        {
-                            OnErrorOccured(result.ErrorMessage);
+                            var result = repo.Delete(eventsToRemove);
+                            if (!result.Success)
+                            {
+                                success = false;
+                                error = result.ErrorMessage;
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        error = $"An error occured. Message: {ex.Message}";
+                    }
+                });
+                if(success)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+                    //to avoid Invalid Operation Exception
+                    for (int i = 0; i < EventCollection.Count; i++)
+                    {
+                        if (EventCollection[i].IsChecked)
+                        {
+                            EventCollection.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    OnInformationRequested("Data removed successfully");
                 }
-                RemoveMode = true;
+                else
+                {
+                    OnErrorOccured(error);
+                }
+                RemoveMode = false;
             }
             CanUseDatagrid = true;
             CanEditFields = false;
@@ -327,7 +424,7 @@ namespace AutomaticSchoolBell.GUI.Events
                     return false;
                 return true;
             }
-            return true;
+            return false;
         }
 
         protected virtual void OnErrorOccured(string message)

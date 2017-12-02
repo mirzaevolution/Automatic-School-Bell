@@ -215,7 +215,12 @@ namespace CoreLib.DataAccess
             string message = "";
             try
             {
-                _table.RemoveRange(items);
+                foreach(var item in items)
+                {
+                    if (!_table.Local.Contains(item))
+                        _table.Attach(item);
+                    _ctx.Entry(item).State = EntityState.Deleted;
+                }
                 _ctx.SaveChanges();
             }
             catch (Exception ex)

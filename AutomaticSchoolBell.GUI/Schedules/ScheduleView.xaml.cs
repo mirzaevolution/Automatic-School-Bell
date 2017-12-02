@@ -24,5 +24,21 @@ namespace AutomaticSchoolBell.GUI.Schedules
         {
             InitializeComponent();
         }
+
+        private void ScheduleViewModel_ErrorOccured(object sender, string e)
+        {
+            BitmapImage image = new BitmapImage(new Uri("/Content/ico-notif-error.png", UriKind.Relative));
+            ImageNotification.Source = image;
+            TextStatus.Text = e;
+        }
+
+        private void ScheduleViewModel_Information(object sender, string e)
+        {
+            BitmapImage image = new BitmapImage(new Uri("/Content/ico-notif-info.png", UriKind.Relative));
+            ImageNotification.Source = image;
+            TextStatus.Text = e;
+        }
+
+   
     }
 }

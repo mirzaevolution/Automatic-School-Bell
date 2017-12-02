@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoreLib.DataAccess;
 using CoreLib.Models;
-
+using Microsoft.Win32;
 
 namespace AutomaticSchoolBell.GUI.RepeatedSchedules
 {
@@ -39,6 +39,8 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
         public RelayCommand EditCommand { get; private set; }
         public RelayCommand RemoveCommand { get; private set; }
         public RelayCommand SaveCommand { get; private set; }
+
+        public RelayCommand BrowseCommand { get; private set; }
         public RelayCommand CancelCommand { get; private set; }
         public bool AddMode
         {
@@ -104,6 +106,10 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
         }
         public async void Load()
         {
+
+            OnInformationRequested("Fetching data...");
+            bool success = true;
+            string error = "";
             await Task.Run(() =>
             {
                 try
@@ -121,15 +127,28 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
                             else
                                 RepeatedScheduleCollection  = new ObservableCollection<RepeatedScheduleModel>();
                         }
+
                         else
-                            OnErrorOccured(result.Status.ErrorMessage);
+                        {
+                            error = result.Status.ErrorMessage;
+                            success = false;
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+
+                    success = false;
+                    error = $"An error occured. Message: {ex.Message}";
                 }
+
             });
+
+            //to avoid cross thread exception
+            if (success)
+                OnInformationRequested("Data loaded successfully");
+            else
+                OnErrorOccured(error);
         }
         private void InitializeComponents()
         {
@@ -139,6 +158,35 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
             RemoveCommand = new RelayCommand(OnRemove, CanRemove);
             SaveCommand = new RelayCommand(OnSave, CanSave);
             CancelCommand = new RelayCommand(OnCancel, CanCancel);
+
+            BrowseCommand = new RelayCommand(OnBrowse, CanBrowse);
+        }
+
+        private void OnBrowse()
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                    FileName = "",
+                    Filter = "Mp3 File (*.mp3)|*.mp3"
+                };
+                if (openFileDialog.ShowDialog().Value)
+                {
+                    SelectedRepeatedSchedule.AudioLocation = openFileDialog.FileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                OnErrorOccured(ex.Message);
+            }
+        }
+
+        private bool CanBrowse()
+        {
+            return (AddMode || EditMode);
         }
 
         private void OnAdd()
@@ -150,9 +198,9 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
             {
                 Description = "",
                 AudioLocation = "",
-                PlayerLocation = "",
+                PlayerLocation = Global.PlayerLocation,
                 IsChecked = false,
-                StartDateTime = new DateTime(0, 0, 0),
+                StartDateTime = DateTime.Now,
                 Repetition = Repetition.Daily
             };
             RepeatedScheduleCollection.Add(SelectedRepeatedSchedule);
@@ -194,56 +242,90 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
             return true;
         }
 
-        private void OnSave()
+        private async void OnSave()
         {
             if (AddMode)
             {
                 var repeatedSchedule = Converter.ConvertFromRepeatedScheduleModel(SelectedRepeatedSchedule);
-                try
+                bool success = true;
+                string error = "";
+                int id = 0;
+                OnInformationRequested("Loading...");
+                await Task.Run(() =>
                 {
-                    using (Repository<RepeatedSchedule> repo = new Repository<RepeatedSchedule>())
+                    try
                     {
-                        var result = repo.InsertWithResult(repeatedSchedule);
-                        if (result.Status.Success)
+                        using (Repository<RepeatedSchedule> repo = new Repository<RepeatedSchedule>())
                         {
-                            SelectedRepeatedSchedule.Id = result.Data.ID;
-                            OnInformationRequested("Data added successfully");
-                        }
-                        else
-                        {
-                            OnErrorOccured(result.Status.ErrorMessage);
+                            var result = repo.InsertWithResult(repeatedSchedule);
+                            if (result.Status.Success)
+                            {
+                                id = result.Data.ID;
+                            }
+                            else
+                            {
+                                success = false;
+                                error = result.Status.ErrorMessage;
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        error = $"An error occured.Message: {ex.Message}";
+                    }
+                });
+
+                if (success)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+                    SelectedRepeatedSchedule.Id = id;
+                    OnInformationRequested("Data added successfully");
+                }
+                else
+                {
+                    RepeatedScheduleCollection.Remove(SelectedRepeatedSchedule);
+                    SelectedRepeatedSchedule = null;
+                    OnErrorOccured(error);
                 }
                 AddMode = false;
 
             }
             else if (EditMode)
             {
-                SelectedRepeatedSchedule.EndEdit();
+
                 var repeatedSchedule = Converter.ConvertFromRepeatedScheduleModel(SelectedRepeatedSchedule);
-                try
+                bool success = true;
+                string error = "";
+                OnInformationRequested("Loading...");
+                await Task.Run(() =>
                 {
-                    using (Repository<RepeatedSchedule> repo = new Repository<RepeatedSchedule>())
+                    try
                     {
-                        var result = repo.Update(repeatedSchedule);
-                        if (result.Success)
+                        using (Repository<RepeatedSchedule> repo = new Repository<RepeatedSchedule>())
                         {
-                            OnInformationRequested("Data updated successfully");
-                        }
-                        else
-                        {
-                            OnErrorOccured(result.ErrorMessage);
+                            var result = repo.Update(repeatedSchedule);
+                            if (!result.Success)
+                            {
+                                success = false;
+                                error = result.ErrorMessage;
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        error = $"An error occured.Message: {ex.Message}";
+                    }
+                });
+                if (success)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+                    SelectedRepeatedSchedule.EndEdit();
+                    OnInformationRequested("Data updated successfully");
+                }
+                else
+                {
+                    SelectedRepeatedSchedule.CancelEdit();
+                    OnErrorOccured(error);
                 }
                 EditMode = false;
             }
@@ -253,29 +335,51 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
                            where item.IsChecked
                            select item;
                 var repeatedSchedulesToRemove = temp.Select(x => Converter.ConvertFromRepeatedScheduleModel(x));
-                try
+                bool success = true;
+                string error = "";
+                OnInformationRequested("Loading...");
+                await Task.Run(() =>
                 {
-                    using (Repository<RepeatedSchedule> repo = new Repository<RepeatedSchedule>())
+                    try
                     {
-                        var result = repo.Delete(repeatedSchedulesToRemove);
-                        if (result.Success)
+                        using (Repository<RepeatedSchedule> repo = new Repository<RepeatedSchedule>())
                         {
-                            foreach (var item in temp)
-                                RepeatedScheduleCollection.Remove(item);
-                            OnInformationRequested("Data removed successfully");
-                        }
-                        else
-                        {
-                            OnErrorOccured(result.ErrorMessage);
+                            var result = repo.Delete(repeatedSchedulesToRemove);
+                            if (!result.Success)
+                            {
+                                success = false;
+                                error = result.ErrorMessage;
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        error = $"An error occured.Message: {ex.Message}";
+
+                    }
+                });
+                if (success)
                 {
-                    OnErrorOccured($"An error occured.\nMessage: {ex.Message}");
+                    //to avoid Invalid Operation Exception
+                    for (int i = 0; i < RepeatedScheduleCollection.Count; i++)
+                    {
+                        if (RepeatedScheduleCollection[i].IsChecked)
+                        {
+                            RepeatedScheduleCollection.RemoveAt(i);
+                            i--;
+                        }
+
+                    }
+                    OnInformationRequested("Data removed successfully");
                 }
-                RemoveMode = true;
+                else
+                {
+                    OnErrorOccured(error);
+                }
+                RemoveMode = false;
             }
+            
             CanUseDatagrid = true;
             CanEditFields = false;
         }
@@ -327,7 +431,7 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
                     return false;
                 return true;
             }
-            return true;
+            return false;
         }
 
         protected virtual void OnErrorOccured(string message)

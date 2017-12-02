@@ -8,11 +8,12 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>AutomaticSchoolBell.GUI</RootNamespace>
     <AssemblyName>AutomaticSchoolBell.GUI</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ico-main.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -44,6 +48,7 @@
     <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="MirzaCryptoHelpersV2, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MirzaCryptoHelpersV2.2.3.0\lib\net45\MirzaCryptoHelpersV2.dll</HintPath>
     </Reference>
@@ -76,10 +81,16 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ConverterModel\Converter.cs" />
+    <Compile Include="EnumConverter\DayOfWeekConverter.cs" />
+    <Compile Include="EnumConverter\RepetitionConverter.cs" />
     <Compile Include="Events\EventView.xaml.cs">
       <DependentUpon>EventView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Events\EventViewModel.cs" />
+    <Compile Include="Global.cs" />
+    <Compile Include="Home\HomeView.xaml.cs">
+      <DependentUpon>HomeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RepeatedSchedules\RepeatedScheduleView.xaml.cs">
       <DependentUpon>RepeatedScheduleView.xaml</DependentUpon>
     </Compile>
@@ -93,6 +104,10 @@
     <Compile Include="ValidatedModels\RepeatedScheduleModel.cs" />
     <Compile Include="ValidatedModels\ScheduleModel.cs" />
     <Page Include="Events\EventView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\HomeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,7 +184,31 @@
     <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="XamlConverter\" />
+    <Resource Include="ico-main.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\ico-event.png" />
+    <Resource Include="Content\ico-main.ico" />
+    <Resource Include="Content\ico-main.png" />
+    <Resource Include="Content\ico-notif-error.png" />
+    <Resource Include="Content\ico-repeated-schedule.png" />
+    <Resource Include="Content\ico-daily-schedule.png" />
+    <Resource Include="Content\main.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\Home.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\ico-schedule.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\Search.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\Search.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\ico-notif-info.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
