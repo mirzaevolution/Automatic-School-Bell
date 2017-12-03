@@ -8,7 +8,7 @@
 
 ![scr3](https://raw.githubusercontent.com/mirzaevolution/Automatic-School-Bell/master/ScreenShots/2.PNG)
 
-Furthermore, the program also uses windows service technology as a backend service to ring the bell in realtime and parallel manner in which we do not need to run its GUI program when windows starts up. Schedules will be checked each second by Service Runner that is run by Windows Service when windows starts up. Even you can make your computer in lock mode (if necessary set password) without going to desktop. 
+Furthermore, the program also uses windows service technology as a back-end service to ring the bell in real time and parallel manner in which we do not need to run its GUI program when windows starts up. Schedules will be checked each second by Service Runner that is run by Windows Service when windows starts up (You don't need to restart your computer after installation. Service will be automatically run by the installer). Even you can make your computer in lock mode (if necessary set password) without going to desktop. 
 
 For more info about installation requirements, how to intall, how it works, etc, you can go to our documentation below :
 
