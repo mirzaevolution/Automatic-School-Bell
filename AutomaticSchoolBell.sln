@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioPlayer", "AudioPlayer\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomaticSchoolBell.GUI", "AutomaticSchoolBell.GUI\AutomaticSchoolBell.GUI.csproj", "{F048CBBA-B9FA-4BF2-BDCA-5CE03692E1C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenShots", "ScreenShots\ScreenShots.csproj", "{151886BD-ACE1-4CD2-A238-B23BD58B9537}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{F048CBBA-B9FA-4BF2-BDCA-5CE03692E1C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F048CBBA-B9FA-4BF2-BDCA-5CE03692E1C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F048CBBA-B9FA-4BF2-BDCA-5CE03692E1C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{151886BD-ACE1-4CD2-A238-B23BD58B9537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{151886BD-ACE1-4CD2-A238-B23BD58B9537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{151886BD-ACE1-4CD2-A238-B23BD58B9537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{151886BD-ACE1-4CD2-A238-B23BD58B9537}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

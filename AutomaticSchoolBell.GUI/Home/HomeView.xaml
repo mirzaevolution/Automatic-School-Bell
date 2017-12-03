@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AutomaticSchoolBell.GUI.Home"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-            
-    </Grid>
+             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="440">
+    <StackPanel>
+        <Image Margin="20,20,20,5" Source="/Content/Main-Text.png" 
+               VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="Uniform"/>
+    </StackPanel>
 </UserControl>

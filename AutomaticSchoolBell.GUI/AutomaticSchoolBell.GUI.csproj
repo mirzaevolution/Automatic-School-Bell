@@ -38,6 +38,9 @@
   <PropertyGroup>
     <ApplicationIcon>ico-main.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -73,6 +76,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="About\AboutView.xaml.cs">
+      <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ConverterModel\Converter.cs" />
     <Compile Include="EnumConverter\DayOfWeekConverter.cs" />
     <Compile Include="EnumConverter\RepetitionConverter.cs" />
@@ -100,6 +106,10 @@
     <Compile Include="ValidatedModels\RepeatedScheduleModel.cs" />
     <Compile Include="ValidatedModels\ScheduleModel.cs" />
     <Compile Include="WindowsService\Controller.cs" />
+    <Page Include="About\AboutView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Events\EventView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -162,6 +172,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -218,6 +229,9 @@
     <Resource Include="Content\ico-status-paused.png" />
     <Resource Include="Content\ico-status-running.png" />
     <Resource Include="Content\ico-status-stopped.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Content\main-text.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

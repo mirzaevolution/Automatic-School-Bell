@@ -1,0 +1,34 @@
+﻿<controls:MetroWindow x:Class="AutomaticSchoolBell.GUI.About.AboutView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AutomaticSchoolBell.GUI.About"
+        mc:Ignorable="d" GlowBrush="RoyalBlue"  
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        WindowStartupLocation="CenterScreen" Icon="/Content/ico-main.ico" WindowStyle="ToolWindow"
+        Title="About" Height="468.175" Width="437.193" ResizeMode="CanMinimize">
+    <Grid Background="#FF235AFF">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock Text="Automatic School Bell v3" FontSize="24" Margin="10" TextBlock.FontFamily="Arial" Foreground="Yellow"/>
+            <TextBlock Margin="10" FontSize="16" Foreground="White">
+            Copyright 2017 <Hyperlink NavigateUri="twitter.com/mirzaevolution" Foreground="Lime"
+                                      RequestNavigate="GotoUri" FontFamily="Arial">Mirza Ghulam Rasyid</Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="10" FontSize="14" TextWrapping="Wrap" Foreground="White">
+           Automatic School Bell is a program used to ring the bell automatically for 
+           daily schedules, events, exams and recurring schedules. This program is intended to 
+           facilitate school administration in managing the time to ring the bell for various schedules.
+           For more information, visit this project repository <Hyperlink RequestNavigate="GotoUri" Foreground="Lime">here.</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+        <TextBox Name="TextBoxLicense" IsReadOnly="True" Grid.Row="1"
+                 Margin="10" AcceptsReturn="True" AcceptsTab="True"
+                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                 TextWrapping="NoWrap"/>
+    </Grid>
+</controls:MetroWindow>

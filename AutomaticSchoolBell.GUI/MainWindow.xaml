@@ -10,7 +10,8 @@
         xmlns:eventView="clr-namespace:AutomaticSchoolBell.GUI.Events"
         xmlns:repeatedView="clr-namespace:AutomaticSchoolBell.GUI.RepeatedSchedules"
         xmlns:service="clr-namespace:AutomaticSchoolBell.GUI.ServiceUI"
-        mc:Ignorable="d" GlowBrush="RoyalBlue" WindowStartupLocation="CenterScreen" Icon="/Content/ico-main.ico"
+        mc:Ignorable="d" GlowBrush="RoyalBlue" 
+        WindowStartupLocation="CenterScreen" Icon="/Content/ico-main.ico"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         Title="Automatic School Bell" Height="500" Width="680">
     <controls:MetroWindow.RightWindowCommands>
