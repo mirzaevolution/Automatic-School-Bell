@@ -175,7 +175,7 @@ namespace RunnerService
                     }
                     else
                     {
-                        _eventLog.WriteEntry($"Failed to start Daily Schedule Timer", EventLogEntryType.Error);
+                        _eventLog.WriteEntry($"Failed to start Daily Schedule Timer. Reason: {result.Status.ErrorMessage}", EventLogEntryType.Error);
                         _isTimerDailyScheduleRunning = false;
                     }
                 }
@@ -196,7 +196,7 @@ namespace RunnerService
                     }
                     else
                     {
-                        _eventLog.WriteEntry($"Failed to start Event Timer", EventLogEntryType.Error);
+                        _eventLog.WriteEntry($"Failed to start Event Timer. Reason: {result.Status.ErrorMessage}", EventLogEntryType.Error);
                         _isTimerEventRunning = false;
                     }
                 }
@@ -217,7 +217,7 @@ namespace RunnerService
                     }
                     else
                     {
-                        _eventLog.WriteEntry($"Failed to start Repeated Schedule Timer", EventLogEntryType.Error);
+                        _eventLog.WriteEntry($"Failed to start Repeated Schedule Timer. Reason: {result.Status.ErrorMessage}", EventLogEntryType.Error);
                         _isTimerRepeatedScheduleRunning = false;
                     }
                 }

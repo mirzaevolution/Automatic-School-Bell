@@ -24,6 +24,12 @@ Project("{E729F059-12D4-455F-A2A4-FDA8DD25E08A}") = "Automatic School Bell v3", 
 		{F048CBBA-B9FA-4BF2-BDCA-5CE03692E1C7} = {F048CBBA-B9FA-4BF2-BDCA-5CE03692E1C7}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL Scripts", "SQL Scripts", "{7E12E995-1ED7-4C28-AD7C-A9292C18C23D}"
+	ProjectSection(SolutionItems) = preProject
+		Install script.sql = Install script.sql
+		uninstall script.sql = uninstall script.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
