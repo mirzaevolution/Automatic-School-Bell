@@ -16,14 +16,14 @@
         <StackPanel>
             <TextBlock Text="Automatic School Bell v3" FontSize="24" Margin="10" TextBlock.FontFamily="Arial" Foreground="Yellow"/>
             <TextBlock Margin="10" FontSize="16" Foreground="White">
-            Copyright 2017 <Hyperlink NavigateUri="twitter.com/mirzaevolution" Foreground="Lime"
+            Copyright 2017 <Hyperlink NavigateUri="https://twitter.com/mirzaevolution" Foreground="Lime"
                                       RequestNavigate="GotoUri" FontFamily="Arial">Mirza Ghulam Rasyid</Hyperlink>
             </TextBlock>
             <TextBlock Margin="10" FontSize="14" TextWrapping="Wrap" Foreground="White">
            Automatic School Bell is a program used to ring the bell automatically for 
            daily schedules, events, exams and recurring schedules. This program is intended to 
            facilitate school administration in managing the time to ring the bell for various schedules.
-           For more information, visit this project repository <Hyperlink RequestNavigate="GotoUri" Foreground="Lime">here.</Hyperlink>
+           For more information, visit this project repository <Hyperlink NavigateUri="https://github.com/mirzaevolution/Automatic-School-Bell/wiki" RequestNavigate="GotoUri" Foreground="Lime">here.</Hyperlink>
             </TextBlock>
         </StackPanel>
         <TextBox Name="TextBoxLicense" IsReadOnly="True" Grid.Row="1"

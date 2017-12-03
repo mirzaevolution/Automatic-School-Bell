@@ -31,7 +31,7 @@ namespace AutomaticSchoolBell.GUI.About
         {
             try
             {
-
+                System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
             }
             catch { }
         }
