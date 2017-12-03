@@ -13,7 +13,7 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
     {
         private RepeatedScheduleModel _selectedRepeatedSchedule;
         private ObservableCollection<RepeatedScheduleModel> _repeatedScheduleCollection;
-        private bool _addMode, _editMode, _removeMode, _canEditFields, _canUseDatagrid = true;
+        private bool _addMode, _editMode, _removeMode, _finishLoading, _canEditFields, _canUseDatagrid = true;
         public RepeatedScheduleModel SelectedRepeatedSchedule
         {
             get
@@ -98,6 +98,17 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
                 OnPropertyChanged(ref _canUseDatagrid, value, nameof(CanUseDatagrid));
             }
         }
+        public bool FinishLoading
+        {
+            get
+            {
+                return _finishLoading;
+            }
+            set
+            {
+                OnPropertyChanged(ref _finishLoading, value, nameof(FinishLoading));
+            }
+        }
         public event EventHandler<string> ErrorOccured;
         public event EventHandler<string> Information;
 
@@ -111,6 +122,7 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
             OnInformationRequested("Fetching data...");
             bool success = true;
             string error = "";
+            FinishLoading = false;
             await Task.Run(() =>
             {
                 try
@@ -147,7 +159,10 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
 
             //to avoid cross thread exception
             if (success)
+            {
                 OnInformationRequested("Data loaded successfully");
+                FinishLoading = true;
+            }
             else
                 OnErrorOccured(error);
         }
@@ -209,7 +224,7 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
 
         private bool CanAdd()
         {
-            if (!_addMode && !_editMode && !_removeMode)
+            if (!_addMode && !_editMode && !_removeMode && FinishLoading)
                 return true;
             return false;
         }

@@ -45,6 +45,13 @@
     <Content Include="diagram.PNG" />
     <Content Include="home.PNG" />
     <Content Include="if_schedule_60204.png" />
+    <Content Include="install1.PNG" />
+    <Content Include="install2.PNG" />
+    <Content Include="install3.PNG" />
+    <Content Include="install4.PNG" />
+    <Content Include="install5.PNG" />
+    <Content Include="install6.PNG" />
+    <Content Include="install7.PNG" />
     <Content Include="main-text.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

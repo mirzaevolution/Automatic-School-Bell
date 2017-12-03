@@ -13,7 +13,7 @@ namespace AutomaticSchoolBell.GUI.Schedules
         
         private ScheduleModel _selectedSchedule;
         private ObservableCollection<ScheduleModel> _scheduleCollection;
-        private bool _addMode, _editMode, _removeMode, _canEditFields=false, _canUseDatagrid = true;
+        private bool _addMode, _editMode, _removeMode, _finishLoading, _canEditFields=false, _canUseDatagrid = true;
         public ScheduleModel SelectedSchedule
         {
             get
@@ -97,6 +97,17 @@ namespace AutomaticSchoolBell.GUI.Schedules
                 OnPropertyChanged(ref _canUseDatagrid, value, nameof(CanUseDatagrid));
             }
         }
+        public bool FinishLoading
+        {
+            get
+            {
+                return _finishLoading;
+            }
+            set
+            {
+                OnPropertyChanged(ref _finishLoading, value, nameof(FinishLoading));
+            }
+        }
         public event EventHandler<string> ErrorOccured;
         public event EventHandler<string> Information;
         public ScheduleViewModel()
@@ -108,6 +119,7 @@ namespace AutomaticSchoolBell.GUI.Schedules
             OnInformationRequested("Fetching data...");
             bool success = true;
             string error = "";
+            FinishLoading = false;
             await Task.Run(() =>
             {
                 try
@@ -142,7 +154,10 @@ namespace AutomaticSchoolBell.GUI.Schedules
 
             //to avoid cross thread exception
             if (success)
+            {
                 OnInformationRequested("Data loaded successfully");
+                FinishLoading = true;
+            }
             else
                 OnErrorOccured(error);
         }
@@ -199,7 +214,7 @@ namespace AutomaticSchoolBell.GUI.Schedules
         }
         private bool CanAdd()
         {
-            if (!_addMode && !_editMode && !_removeMode)
+            if (!_addMode && !_editMode && !_removeMode && FinishLoading)
                 return true;
             return false;
         }

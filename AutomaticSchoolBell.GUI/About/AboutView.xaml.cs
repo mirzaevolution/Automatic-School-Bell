@@ -1,4 +1,5 @@
 ﻿using MahApps.Metro.Controls;
+using System;
 using System.IO;
 namespace AutomaticSchoolBell.GUI.About
 {
@@ -14,11 +15,11 @@ namespace AutomaticSchoolBell.GUI.About
         }
         private async void Load()
         {
-            if(File.Exists("apache-license.txt"))
+            if(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apache-license.txt")))
             {
                 try
                 {
-                    using (StreamReader reader = new StreamReader("apache-license.txt"))
+                    using (StreamReader reader = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apache-license.txt")))
                     {
                         string text = await reader.ReadToEndAsync();
                         TextBoxLicense.Text = text;

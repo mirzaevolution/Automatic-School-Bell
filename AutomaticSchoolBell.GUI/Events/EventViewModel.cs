@@ -12,7 +12,7 @@ namespace AutomaticSchoolBell.GUI.Events
     public class EventViewModel:BindableBase
     {
         private EventModel _selectedEvent;
-        private bool _addMode, _editMode, _removeMode, _canEditFields, _canUseDatagrid = true;
+        private bool _addMode, _editMode, _removeMode, _finishLoading, _canEditFields, _canUseDatagrid = true;
         private ObservableCollection<EventModel> _eventCollection;
         public EventModel SelectedEvent
         {
@@ -97,6 +97,17 @@ namespace AutomaticSchoolBell.GUI.Events
                 OnPropertyChanged(ref _canUseDatagrid, value, nameof(CanUseDatagrid));
             }
         }
+        public bool FinishLoading
+        {
+            get
+            {
+                return _finishLoading;
+            }
+            set
+            {
+                OnPropertyChanged(ref _finishLoading, value, nameof(FinishLoading));
+            }
+        }
         public event EventHandler<string> ErrorOccured;
         public event EventHandler<string> Information;
         public EventViewModel()
@@ -109,6 +120,7 @@ namespace AutomaticSchoolBell.GUI.Events
             OnInformationRequested("Fetching data...");
             bool success = true;
             string error = "";
+            FinishLoading = false;
             await Task.Run(() =>
             {
                 try
@@ -142,7 +154,10 @@ namespace AutomaticSchoolBell.GUI.Events
 
             //to avoid cross thread exception
             if (success)
+            {
                 OnInformationRequested("Data loaded successfully");
+                FinishLoading = true;
+            }
             else
                 OnErrorOccured(error);
         }
@@ -204,7 +219,7 @@ namespace AutomaticSchoolBell.GUI.Events
 
         private bool CanAdd()
         {
-            if (!_addMode && !_editMode && !_removeMode)
+            if (!_addMode && !_editMode && !_removeMode && FinishLoading)
                 return true;
             return false;
         }
