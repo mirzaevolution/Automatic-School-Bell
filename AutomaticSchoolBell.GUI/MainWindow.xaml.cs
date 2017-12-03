@@ -31,5 +31,10 @@ namespace AutomaticSchoolBell.GUI
         {
             this.HamburgerMenuControl.Content = e.ClickedItem;
         }
+
+        private void ButtonAbout_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

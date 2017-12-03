@@ -9,23 +9,13 @@
         xmlns:scheduleView="clr-namespace:AutomaticSchoolBell.GUI.Schedules"
         xmlns:eventView="clr-namespace:AutomaticSchoolBell.GUI.Events"
         xmlns:repeatedView="clr-namespace:AutomaticSchoolBell.GUI.RepeatedSchedules"
-        mc:Ignorable="d" Opacity="95"
-        GlowBrush="RoyalBlue" WindowStartupLocation="CenterScreen" Icon="/Content/ico-main.ico"
+        xmlns:service="clr-namespace:AutomaticSchoolBell.GUI.ServiceUI"
+        mc:Ignorable="d" GlowBrush="RoyalBlue" WindowStartupLocation="CenterScreen" Icon="/Content/ico-main.ico"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         Title="Automatic School Bell" Height="500" Width="680">
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
-            <Button>
-                <StackPanel Orientation="Horizontal">
-                    <Rectangle Width="20" Height="20"
-                               Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_information}" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                    <TextBlock Text="About" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
+            <Button Name="ButtonAbout" Content="About" Cursor="Hand" Click="ButtonAbout_Click"/>
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
     <controls:MetroWindow.Resources>
@@ -54,7 +44,6 @@
                                 SelectedIndex="0"
                                 ItemTemplate="{StaticResource MenuItemTemplate}"
                                 ItemClick="HamburgerMenuControl_ItemClick">
-            
             <controls:HamburgerMenu.ContentTemplate>
                 <DataTemplate DataType="{x:Type controls:HamburgerMenuItem}">
                     <Grid x:Name="TheContentGrid">
@@ -116,7 +105,14 @@
                             <repeatedView:RepeatedScheduleView />
                         </controls:HamburgerMenuImageItem.Tag>
                     </controls:HamburgerMenuImageItem>
-
+                    <controls:HamburgerMenuImageItem Label="Service Runner">
+                        <controls:HamburgerMenuImageItem.Thumbnail>
+                            <BitmapImage UriSource="/Content/ico-winsvc.png"/>
+                        </controls:HamburgerMenuImageItem.Thumbnail>
+                        <controls:HamburgerMenuImageItem.Tag>
+                            <service:ServiceView/>
+                        </controls:HamburgerMenuImageItem.Tag>
+                    </controls:HamburgerMenuImageItem>
                 </controls:HamburgerMenuItemCollection>
             </controls:HamburgerMenu.ItemsSource>
         </controls:HamburgerMenu>

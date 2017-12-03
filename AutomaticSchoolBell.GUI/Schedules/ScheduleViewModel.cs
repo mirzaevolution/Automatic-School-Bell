@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CoreLib.DataAccess;
 using CoreLib.Models;
 using Microsoft.Win32;
-
+using AutomaticSchoolBell.GUI.WindowsService;
 namespace AutomaticSchoolBell.GUI.Schedules
 {
     public class ScheduleViewModel:BindableBase
@@ -36,12 +36,12 @@ namespace AutomaticSchoolBell.GUI.Schedules
                 OnPropertyChanged(ref _scheduleCollection, value, nameof(ScheduleCollection));
             }
         }
-        public RelayCommand AddCommand { get; private set; }
-        public RelayCommand EditCommand { get; private set; }
-        public RelayCommand RemoveCommand { get; private set; }
-        public RelayCommand SaveCommand { get; private set; }
-        public RelayCommand BrowseCommand { get; private set; }
-        public RelayCommand CancelCommand { get; private set; }
+        public RelayCommand AddCommand { get; private set; } //ctrl + shift + a
+        public RelayCommand EditCommand { get; private set; } //ctrl + shift + e
+        public RelayCommand RemoveCommand { get; private set; } //ctrl + delete
+        public RelayCommand SaveCommand { get; private set; } //ctrl + s
+        public RelayCommand BrowseCommand { get; private set; } //ctrl + b
+        public RelayCommand CancelCommand { get; private set; } //ctrl + q
         public bool AddMode
         {
             get
@@ -267,10 +267,27 @@ namespace AutomaticSchoolBell.GUI.Schedules
                         error = $"An error occured.Message: {ex.Message}";
                     }
                 });
-                if(success)
+                if (success)
                 {
                     SelectedSchedule.Id = id;
-                    OnInformationRequested("Data added successfully");
+                    OnInformationRequested("Data added successfully, refreshing service in the background...");
+                    await Task.Run(() =>
+                    {
+                        var result = Controller.RefreshService();
+                        if (!result.Success)
+                        {
+                            success = false;
+                            error = result.ErrorMessage;
+                        }
+                    });
+                    if (success)
+                    {
+                        OnInformationRequested("Service refreshed successfully");
+                    }
+                    else
+                    {
+                        OnErrorOccured(error);
+                    }
                 }
                 else
                 {
@@ -315,7 +332,24 @@ namespace AutomaticSchoolBell.GUI.Schedules
                 {
 
                     SelectedSchedule.EndEdit();
-                    OnInformationRequested("Data updated successfully");
+                    OnInformationRequested("Data updated successfully, refreshing service in the background...");
+                    await Task.Run(() =>
+                    {
+                        var result = Controller.RefreshService();
+                        if (!result.Success)
+                        {
+                            success = false;
+                            error = result.ErrorMessage;
+                        }
+                    });
+                    if (success)
+                    {
+                        OnInformationRequested("Service refreshed successfully");
+                    }
+                    else
+                    {
+                        OnErrorOccured(error);
+                    }
                 }
                 else
                 {
@@ -365,7 +399,24 @@ namespace AutomaticSchoolBell.GUI.Schedules
                         }
 
                     }
-                    OnInformationRequested("Data removed successfully");
+                    OnInformationRequested("Data removed successfully, refreshing service in the background...");
+                    await Task.Run(() =>
+                    {
+                        var result = Controller.RefreshService();
+                        if (!result.Success)
+                        {
+                            success = false;
+                            error = result.ErrorMessage;
+                        }
+                    });
+                    if (success)
+                    {
+                        OnInformationRequested("Service refreshed successfully");
+                    }
+                    else
+                    {
+                        OnErrorOccured(error);
+                    }
                 }
                 else
                 {

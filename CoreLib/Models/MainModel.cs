@@ -10,16 +10,7 @@ namespace CoreLib.Models
         Daily = 1,
         Monthly = 2
     }
-
-    [Table("Identity")]
-    public class Identity
-    {
-        public int ID { get; set; }
-        public string PasswordHash { get; set; }
-        public string Question { get; set; }
-        public string AnswerHash { get; set; }
-    }
-
+    
     [Table("Schedule")]
     public class Schedule
     {
@@ -30,15 +21,13 @@ namespace CoreLib.Models
         [Required]
         public TimeSpan StartTime { get; set; }
 
-        [StringLength(250)]
+        [MaxLength(250)]
         public string Description { get; set; }
 
         [Required]
-        [StringLength(500)]
         public string AudioLocation { get; set; }
 
         [Required]
-        [StringLength(500)]
         public string PlayerLocation { get; set; }
     }
     [Table("Event")]
@@ -52,15 +41,13 @@ namespace CoreLib.Models
         [Required]
         public TimeSpan StartTime { get; set; }
 
-        [StringLength(250)]
+        [MaxLength(250)]
         public string Description { get; set; }
 
         [Required]
-        [StringLength(500)]
         public string AudioLocation { get; set; }
 
         [Required]
-        [StringLength(500)]
         public string PlayerLocation { get; set; }
     }
     [Table("RepeatedSchedule")]
@@ -74,15 +61,13 @@ namespace CoreLib.Models
         [Required]
         public Repetition Repetition { get; set; }
 
-        [StringLength(250)]
+        [MaxLength(250)]
         public string Description { get; set; }
 
         [Required]
-        [StringLength(500)]
         public string AudioLocation { get; set; }
 
         [Required]
-        [StringLength(500)]
         public string PlayerLocation { get; set; }
     }
 }

@@ -12,6 +12,8 @@ namespace AudioPlayer
                 MainWindow window = new MainWindow(e.Args[0]);
                 window.Show();
             }
+            else
+                App.Current.Shutdown();
         }
     }
 }

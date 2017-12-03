@@ -16,6 +16,7 @@
             <ei:CallMethodAction TargetObject="{Binding}" MethodName="Load"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
+   
     <UserControl.Resources>
         <converter:DayOfWeekConverter x:Key="Converter"/>
         
@@ -63,14 +64,17 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Schedule Day"/>
                 <ComboBox FontSize="16" Grid.Column="1" Margin="5" 
-                      VerticalContentAlignment="Center" SelectedItem="{Binding Day, Converter={StaticResource Converter},UpdateSourceTrigger=PropertyChanged}">
-                    <sys:String>Sunday</sys:String>
-                    <sys:String>Monday</sys:String>
-                    <sys:String>Tuesday</sys:String>
-                    <sys:String>Wednesday</sys:String>
-                    <sys:String>Thursday</sys:String>
-                    <sys:String>Friday</sys:String>
-                    <sys:String>Saturday</sys:String>
+                      VerticalContentAlignment="Center" 
+                          SelectedItem="{Binding Day, Converter={StaticResource Converter},UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBox.Items>
+                        <sys:String>Sunday</sys:String>
+                        <sys:String>Monday</sys:String>
+                        <sys:String>Tuesday</sys:String>
+                        <sys:String>Wednesday</sys:String>
+                        <sys:String>Thursday</sys:String>
+                        <sys:String>Friday</sys:String>
+                        <sys:String>Saturday</sys:String>
+                    </ComboBox.Items>
                 </ComboBox>
                 <TextBlock Text="Start Time" Grid.Row="1"/>
                 <controls:TimePicker Grid.Row="1" Grid.Column="1" Margin="5" SelectedTime="{Binding StartTime,UpdateSourceTrigger=PropertyChanged}" Width="120" HorizontalAlignment="Left"/>

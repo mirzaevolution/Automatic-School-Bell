@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CoreLib.DataAccess;
 using CoreLib.Models;
 using Microsoft.Win32;
+using AutomaticSchoolBell.GUI.WindowsService;
 
 namespace AutomaticSchoolBell.GUI.RepeatedSchedules
 {
@@ -279,7 +280,24 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
                 if (success)
                 {
                     SelectedRepeatedSchedule.Id = id;
-                    OnInformationRequested("Data added successfully");
+                    OnInformationRequested("Data added successfully, refreshing service in the background...");
+                    await Task.Run(() =>
+                    {
+                        var result = Controller.RefreshService();
+                        if (!result.Success)
+                        {
+                            success = false;
+                            error = result.ErrorMessage;
+                        }
+                    });
+                    if (success)
+                    {
+                        OnInformationRequested("Service refreshed successfully");
+                    }
+                    else
+                    {
+                        OnErrorOccured(error);
+                    }
                 }
                 else
                 {
@@ -320,7 +338,24 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
                 if (success)
                 {
                     SelectedRepeatedSchedule.EndEdit();
-                    OnInformationRequested("Data updated successfully");
+                    OnInformationRequested("Data updated successfully, refreshing service in the background...");
+                    await Task.Run(() =>
+                    {
+                        var result = Controller.RefreshService();
+                        if (!result.Success)
+                        {
+                            success = false;
+                            error = result.ErrorMessage;
+                        }
+                    });
+                    if (success)
+                    {
+                        OnInformationRequested("Service refreshed successfully");
+                    }
+                    else
+                    {
+                        OnErrorOccured(error);
+                    }
                 }
                 else
                 {
@@ -371,7 +406,24 @@ namespace AutomaticSchoolBell.GUI.RepeatedSchedules
                         }
 
                     }
-                    OnInformationRequested("Data removed successfully");
+                    OnInformationRequested("Data removed successfully, refreshing service in the background...");
+                    await Task.Run(() =>
+                    {
+                        var result = Controller.RefreshService();
+                        if (!result.Success)
+                        {
+                            success = false;
+                            error = result.ErrorMessage;
+                        }
+                    });
+                    if (success)
+                    {
+                        OnInformationRequested("Service refreshed successfully");
+                    }
+                    else
+                    {
+                        OnErrorOccured(error);
+                    }
                 }
                 else
                 {

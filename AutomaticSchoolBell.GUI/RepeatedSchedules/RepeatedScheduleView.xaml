@@ -68,9 +68,11 @@
                 <ComboBox FontSize="16"  Grid.Row="1" Grid.Column="1" Margin="5" 
                       VerticalContentAlignment="Center" SelectedItem="{Binding Repetition, Converter={StaticResource Converter}, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                       controls:ComboBoxHelper.CharacterCasing="Normal">
-                    <sys:String>Hourly</sys:String>
-                    <sys:String>Daily</sys:String>
-                    <sys:String>Monthly</sys:String>
+                    <ComboBox.Items>
+                        <sys:String>Hourly</sys:String>
+                        <sys:String>Daily</sys:String>
+                        <sys:String>Monthly</sys:String>
+                    </ComboBox.Items>
                 </ComboBox>
                 <TextBlock Text="Short Description" Grid.Row="2"/>
                 <TextBox Text="{Binding Description,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBoxStyleError}" Grid.Row="2" Grid.Column="1" controls:TextBoxHelper.ClearTextButton="True" Margin="5"/>
