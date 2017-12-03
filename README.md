@@ -2,7 +2,7 @@
 
 ![scr1](https://raw.githubusercontent.com/mirzaevolution/Automatic-School-Bell/master/ScreenShots/1.PNG)
 
-**Automatic school bell** is a program used to ring the bell automatically for daily schedules, events, exams and recurring schedules. This program is intended to facilitate school administration in managing the time to ring the bell for a given schedule. Audio can be specified independently based on each school need. It uses SQL Server as the backend that allows to store data quickly and reliably. 
+**Automatic school bell** is a program used to ring the bell automatically for daily schedules, events, exams and recurring schedules. This program is intended to facilitate school administration in managing the time to ring the bell for a given schedule. Audio can be specified independently based on each school need. It uses SQL Server as the backend storage that allows us to store data quickly and reliably. 
 
 ![scr2](https://raw.githubusercontent.com/mirzaevolution/Automatic-School-Bell/master/ScreenShots/7.PNG)
 
